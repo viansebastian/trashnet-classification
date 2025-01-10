@@ -6,3 +6,4 @@ seaborn==0.13.2
 wandb==0.19.1
 pandas==2.2.2
 scikit-learn==1.6.0
+huggingface_hub
