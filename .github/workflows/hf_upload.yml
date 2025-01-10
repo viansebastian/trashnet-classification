@@ -31,7 +31,7 @@ jobs:
         import shutil
 
         # Load the model
-        model_path = "./saved_models/focal_model.keras"
+        model_path = "focal_model.keras"
 
         # Define repo name and local folder
         repo_name = "focal-loss-model"
