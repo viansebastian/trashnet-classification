@@ -1,0 +1,47 @@
+name: Upload Model to Hugging Face
+
+on:
+  push:
+    branches:
+      - main  # Trigger workflow on pushes to the main branch
+
+jobs:
+  upload_to_huggingface:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set Up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Upload Model to Hugging Face
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        from huggingface_hub import HfApi, Repository
+        from tensorflow.keras.models import load_model
+        import shutil
+
+        # Load the model
+        model_path = "./saved_models/focal_model.keras"
+
+        # Define repo name and local folder
+        repo_name = "focal-loss-model"
+        repo_url = HfApi().create_repo(repo_name, token="${{ secrets.HF_TOKEN }}", exist_ok=True)
+        local_repo = Repository(local_dir=repo_name, clone_from=repo_url)
+
+        # Copy files into the repo folder
+        shutil.copy(model_path, f"{repo_name}/focal_model.keras")
+        with open(f"{repo_name}/README.md", "w") as f:
+            f.write("# Focal Loss Model\n\nThis model is trained with Focal Loss.")
+
+        # Push changes to Hugging Face
+        local_repo.push_to_hub()
